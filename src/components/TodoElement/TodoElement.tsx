@@ -59,7 +59,6 @@ export const TodoElement: React.FC<TodoElementProps> = ({
   const loading = !todo.isLoaded;
 
   return (
-    /* This is a completed todo Remove button appears only on hover overlay will cover the todo while it is being deleted or updated */
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <TodoStatus
         isCompletedTodo={todo.completed}

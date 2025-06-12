@@ -17,7 +17,6 @@ export const Filter: React.FC<FilterProps> = ({ setFilterStyle }) => {
   const filterKey = Object.keys(FilterType);
 
   return (
-    /* Active link should have the 'selected' class */
     <nav className="filter" data-cy="Filter">
       {filterKey.map((style, index) => (
         <a

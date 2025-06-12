@@ -27,7 +27,6 @@ export const TodoappFooter: React.FC<TodoappFooterProps> = ({
   }
 
   return (
-    /* Hide the footer if there are no todos */
     <footer className="todoapp__footer" data-cy="Footer">
       <TodosCounter todosCount={todosLength} />
 

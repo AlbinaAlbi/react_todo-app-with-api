@@ -86,7 +86,7 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
         ),
       );
     } catch {
-      errorNotification('Unable to update todo', setErrorNotification);
+      errorNotification('Unable to update a todo', setErrorNotification);
     }
   };
 

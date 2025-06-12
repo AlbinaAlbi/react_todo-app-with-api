@@ -14,7 +14,6 @@ export const TodoEdit: React.FC<TodoEditProps> = ({
   editedTitle,
 }) => {
   return (
-    /* This form is shown instead of the title and remove button */
     <form>
       <input
         data-cy="TodoTitleField"
