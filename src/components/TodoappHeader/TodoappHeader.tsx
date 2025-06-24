@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { USER_ID, postTodo } from '../../api/todos';
-import { errorNotification } from '../../utils/errorFunction';
+import { USER_ID, patchTodo, postTodo } from '../../api/todos';
+import { errorNotificationMessage } from '../../utils/errorFunction';
 import classNames from 'classnames';
 
 interface TodoappHeaderProps {
@@ -37,7 +37,10 @@ export const TodoappHeader: React.FC<TodoappHeaderProps> = ({
     e.preventDefault();
 
     if (newTodo.trim() === '') {
-      errorNotification('Title should not be empty', setErrorNotification);
+      errorNotificationMessage(
+        'Title should not be empty',
+        setErrorNotification,
+      );
 
       return;
     }
@@ -69,15 +72,23 @@ export const TodoappHeader: React.FC<TodoappHeaderProps> = ({
       }, 0);
     } catch (error) {
       setIsLoading(false);
-      errorNotification('Unable to add a todo', setErrorNotification);
+      errorNotificationMessage('Unable to add a todo', setErrorNotification);
       setTodos(prev => prev.filter(todo => todo.id !== lastTodoId));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleToggleAllActive = () => {
+  const handleToggleAllActive = async () => {
     const toggledCompleted = !activeTodo;
+
+    const todosToUpdate = todos.filter(
+      todo => todo.completed !== toggledCompleted,
+    );
+
+    if (todosToUpdate.length === 0) {
+      return;
+    }
 
     setTodos(prev =>
       prev.map(todo => ({
@@ -86,15 +97,29 @@ export const TodoappHeader: React.FC<TodoappHeaderProps> = ({
       })),
     );
 
-    setTimeout(() => {
-      setTodos(prev =>
-        prev.map(todo => ({
-          ...todo,
-          completed: toggledCompleted,
-          isLoaded: true,
-        })),
+    try {
+      const updatedTodos = await Promise.all(
+        todosToUpdate.map(async todo => {
+          const updatedTodo = await patchTodo(todo.id, {
+            completed: toggledCompleted,
+          });
+
+          return { ...updatedTodo, isLoaded: true };
+        }),
       );
-    }, 500);
+
+      setTodos(prev =>
+        prev.map(
+          todo =>
+            updatedTodos.find(t => t.id === todo.id) || {
+              ...todo,
+              isLoaded: true,
+            },
+        ),
+      );
+    } catch (error) {
+      errorNotificationMessage('Unable to update todos', setErrorNotification);
+    }
   };
 
   return (

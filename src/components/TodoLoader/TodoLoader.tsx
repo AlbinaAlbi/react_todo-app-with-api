@@ -1,13 +1,14 @@
+import classNames from 'classnames';
+
 interface TodoLoaderProps {
   loading: boolean;
 }
 
 export const TodoLoader: React.FC<TodoLoaderProps> = ({ loading }) => {
   return (
-    /* 'is-active' class puts this modal on top of the todo */
     <div
       data-cy="TodoLoader"
-      className={`modal overlay ${loading ? 'is-active' : ''}`}
+      className={classNames('modal', 'overlay', { 'is-active': loading })}
     >
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />

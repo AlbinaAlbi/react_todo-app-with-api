@@ -11,6 +11,7 @@ interface TodoElementProps {
   handleTodoDelete: (keyTodo: number) => void;
   handleToggleStatus: (idTodo: number) => void;
   handleUpdateTodo: (updateTodo: Todo) => void;
+  errorNotification: string;
 }
 
 export const TodoElement: React.FC<TodoElementProps> = ({
@@ -40,9 +41,8 @@ export const TodoElement: React.FC<TodoElementProps> = ({
     } else if (!trimEditedTitle) {
       handleTodoDelete(todo.id);
     } else {
-      const updateTodos = { ...todo, title: editedTitle };
+      const updateTodos = { ...todo, title: trimEditedTitle };
 
-      setEditedTitle(editedTitle);
       setIsEditing(false);
       handleUpdateTodo(updateTodos);
     }
@@ -51,6 +51,11 @@ export const TodoElement: React.FC<TodoElementProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       finishEditedTitle();
+    }
+
+    if (e.key === 'Escape') {
+      setEditedTitle(todo.title);
+      setIsEditing(false);
     }
   };
 

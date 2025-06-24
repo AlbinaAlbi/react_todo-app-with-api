@@ -1,6 +1,6 @@
 import { deleteTodo, patchTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
-import { errorNotification } from '../../utils/errorFunction';
+import { errorNotificationMessage } from '../../utils/errorFunction';
 import { TodoElement } from '../TodoElement/TodoElement';
 
 interface TodoappMainProps {
@@ -8,6 +8,7 @@ interface TodoappMainProps {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorNotification: (msg: string) => void;
   inputRef: React.RefObject<HTMLInputElement>;
+  errorNotification: string;
 }
 
 export const TodoappMain: React.FC<TodoappMainProps> = ({
@@ -28,7 +29,7 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
       setTodos(prev => prev.filter(todo => todo.id !== idTodo));
       inputRef.current?.focus();
     } catch {
-      errorNotification('Unable to delete a todo', setErrorNotification);
+      errorNotificationMessage('Unable to delete a todo', setErrorNotification);
 
       setTodos(prev =>
         prev.map(todo =>
@@ -38,18 +39,14 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
     }
   };
 
-  const handleToggleStatus = async (idTodo: number) => {
+  const handleToggleStatus = async (todoToUpdate: Todo) => {
+    const idTodo = todoToUpdate.id;
+
     setTodos(prev =>
       prev.map(todo =>
         todo.id === idTodo ? { ...todo, isLoaded: false } : todo,
       ),
     );
-
-    const todoToUpdate = todos.find(todo => todo.id === idTodo);
-
-    if (!todoToUpdate) {
-      return;
-    }
 
     try {
       const updated = await patchTodo(idTodo, {
@@ -62,7 +59,7 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
         ),
       );
     } catch {
-      errorNotification('Unable to update todo status', setErrorNotification);
+      errorNotificationMessage('Unable to update a todo', setErrorNotification);
     }
   };
 
@@ -86,7 +83,13 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
         ),
       );
     } catch {
-      errorNotification('Unable to update a todo', setErrorNotification);
+      errorNotificationMessage('Unable to update a todo', setErrorNotification);
+
+      setTodos(prev =>
+        prev.map(todo =>
+          todo.id === updatedTodo.id ? { ...todo, isLoaded: true } : todo,
+        ),
+      );
     }
   };
 
@@ -97,7 +100,7 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
           key={todo.id}
           todo={todo}
           handleTodoDelete={handleTodoDelete}
-          handleToggleStatus={handleToggleStatus}
+          handleToggleStatus={() => handleToggleStatus(todo)}
           handleUpdateTodo={handleUpdateTodo}
         />
       ))}

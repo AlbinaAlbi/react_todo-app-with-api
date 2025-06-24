@@ -5,7 +5,8 @@ import { TodoappMain } from '../TodoappMain';
 import { Todo } from '../../types/Todo';
 import { FilterType } from '../../types/Filter';
 import { deleteTodo, getTodos } from '../../api/todos';
-import { errorNotification } from '../../utils/errorFunction';
+import { errorNotificationMessage } from '../../utils/errorFunction';
+
 interface TodoappContentProps {
   setErrorNotification: (msg: string) => void;
 }
@@ -24,7 +25,9 @@ export const TodoappContent: React.FC<TodoappContentProps> = ({
 
         setTodos(newData);
       })
-      .catch(() => setErrorNotification('Unable to load todos'));
+      .catch(() => {
+        setErrorNotification('Unable to load todos');
+      });
   }, [setErrorNotification]);
 
   const filteredTodos = todos.filter(todo => {
@@ -55,7 +58,10 @@ export const TodoappContent: React.FC<TodoappContentProps> = ({
           await deleteTodo(todo.id);
         } catch {
           failedToDelete.push({ ...todo, isLoaded: true });
-          errorNotification('Unable to delete a todo', setErrorNotification);
+          errorNotificationMessage(
+            'Unable to delete a todo',
+            setErrorNotification,
+          );
         }
       }),
     );
