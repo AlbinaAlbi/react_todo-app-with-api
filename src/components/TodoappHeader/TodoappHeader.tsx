@@ -72,6 +72,7 @@ export const TodoappHeader: React.FC<TodoappHeaderProps> = ({
       }, 0);
     } catch (error) {
       setIsLoading(false);
+
       errorNotificationMessage('Unable to add a todo', setErrorNotification);
       setTodos(prev => prev.filter(todo => todo.id !== lastTodoId));
     } finally {
@@ -118,6 +119,12 @@ export const TodoappHeader: React.FC<TodoappHeaderProps> = ({
         ),
       );
     } catch (error) {
+      setTodos(prev =>
+        prev.map(todo => ({
+          ...todo,
+          isLoaded: true,
+        })),
+      );
       errorNotificationMessage('Unable to update todos', setErrorNotification);
     }
   };

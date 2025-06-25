@@ -29,13 +29,12 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
       setTodos(prev => prev.filter(todo => todo.id !== idTodo));
       inputRef.current?.focus();
     } catch {
-      errorNotificationMessage('Unable to delete a todo', setErrorNotification);
-
       setTodos(prev =>
         prev.map(todo =>
           todo.id === idTodo ? { ...todo, isLoaded: true } : todo,
         ),
       );
+      errorNotificationMessage('Unable to delete a todo', setErrorNotification);
     }
   };
 
@@ -59,6 +58,11 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
         ),
       );
     } catch {
+      setTodos(prev =>
+        prev.map(todo =>
+          todo.id === idTodo ? { ...todo, isLoaded: true } : todo,
+        ),
+      );
       errorNotificationMessage('Unable to update a todo', setErrorNotification);
     }
   };
@@ -78,7 +82,7 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
       setTodos(prev =>
         prev.map(todo =>
           todo.id === serverTodo.id
-            ? { ...todo, title: updatedTodo.title, isLoaded: true }
+            ? { ...todo, title: updatedTodo.title.trim(), isLoaded: true }
             : todo,
         ),
       );

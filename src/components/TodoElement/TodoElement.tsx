@@ -11,7 +11,6 @@ interface TodoElementProps {
   handleTodoDelete: (keyTodo: number) => void;
   handleToggleStatus: (idTodo: number) => void;
   handleUpdateTodo: (updateTodo: Todo) => void;
-  errorNotification: string;
 }
 
 export const TodoElement: React.FC<TodoElementProps> = ({
@@ -21,36 +20,36 @@ export const TodoElement: React.FC<TodoElementProps> = ({
   handleUpdateTodo,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(todo.title);
+  const [editedTitle, setEditedTitle] = useState(todo.title.trim());
 
   const handleDoubleClick = () => {
     setIsEditing(true);
   };
 
   const handleEditedTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const trimmedTitle = e.target.value.trim();
-
-    setEditedTitle(trimmedTitle);
+    setEditedTitle(e.target.value);
   };
 
-  const finishEditedTitle = () => {
-    const trimEditedTitle = editedTitle.trim();
+  const finishEditedTitle = async (rawTitle: string) => {
+    const trimmedTitle = rawTitle.trim();
 
-    if (trimEditedTitle === todo.title) {
+    if (trimmedTitle === todo.title) {
       setIsEditing(false);
-    } else if (!trimEditedTitle) {
+    } else if (!trimmedTitle) {
       handleTodoDelete(todo.id);
     } else {
-      const updateTodos = { ...todo, title: trimEditedTitle };
+      const updateTodos = { ...todo, title: trimmedTitle };
 
+      await handleUpdateTodo(updateTodos);
+      setEditedTitle(trimmedTitle);
       setIsEditing(false);
-      handleUpdateTodo(updateTodos);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      finishEditedTitle();
+      e.preventDefault();
+      await finishEditedTitle(e.currentTarget.value);
     }
 
     if (e.key === 'Escape') {
@@ -59,7 +58,9 @@ export const TodoElement: React.FC<TodoElementProps> = ({
     }
   };
 
-  const handleInputBlur = () => finishEditedTitle();
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    finishEditedTitle(e.currentTarget.value);
+  };
 
   const loading = !todo.isLoaded;
 

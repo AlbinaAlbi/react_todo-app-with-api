@@ -3,7 +3,7 @@ import React from 'react';
 interface TodoEditProps {
   handleEditedTitle: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  handleInputBlur: () => void;
+  handleInputBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
   editedTitle: string;
 }
 
