@@ -2,9 +2,17 @@ import React from 'react';
 
 interface TodoDeleteProps {
   onDelete: () => void;
+  isEditing: boolean;
 }
 
-export const TodoDelete: React.FC<TodoDeleteProps> = ({ onDelete }) => {
+export const TodoDelete: React.FC<TodoDeleteProps> = ({
+  onDelete,
+  isEditing,
+}) => {
+  if (isEditing) {
+    return null;
+  }
+
   return (
     <button
       type="button"

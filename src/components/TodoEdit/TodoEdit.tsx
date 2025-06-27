@@ -5,6 +5,7 @@ interface TodoEditProps {
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   handleInputBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
   editedTitle: string;
+  isEditing: boolean;
 }
 
 export const TodoEdit: React.FC<TodoEditProps> = ({
@@ -12,7 +13,12 @@ export const TodoEdit: React.FC<TodoEditProps> = ({
   handleKeyDown,
   handleInputBlur,
   editedTitle,
+  isEditing,
 }) => {
+  if (!isEditing) {
+    return null;
+  }
+
   return (
     <form>
       <input

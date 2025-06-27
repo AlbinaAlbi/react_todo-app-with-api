@@ -33,17 +33,25 @@ export const TodoElement: React.FC<TodoElementProps> = ({
   const finishEditedTitle = async (rawTitle: string) => {
     const trimmedTitle = rawTitle.trim();
 
-    if (trimmedTitle === todo.title) {
-      setIsEditing(false);
-    } else if (!trimmedTitle) {
-      handleTodoDelete(todo.id);
-    } else {
-      const updateTodos = { ...todo, title: trimmedTitle };
+    if (!trimmedTitle) {
+      setEditedTitle(todo.title.trim());
 
+      return;
+    }
+
+    if (trimmedTitle === todo.title.trim()) {
+      setIsEditing(false);
+
+      return;
+    }
+
+    const updateTodos = { ...todo, title: trimmedTitle };
+
+    try {
       await handleUpdateTodo(updateTodos);
       setEditedTitle(trimmedTitle);
       setIsEditing(false);
-    }
+    } catch {}
   };
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -53,7 +61,7 @@ export const TodoElement: React.FC<TodoElementProps> = ({
     }
 
     if (e.key === 'Escape') {
-      setEditedTitle(todo.title);
+      setEditedTitle(todo.title.trim());
       setIsEditing(false);
     }
   };
@@ -71,18 +79,24 @@ export const TodoElement: React.FC<TodoElementProps> = ({
         todoStatus={() => handleToggleStatus(todo.id)}
       />
 
-      {isEditing ? (
-        <TodoEdit
-          handleEditedTitle={handleEditedTitle}
-          handleKeyDown={handleKeyDown}
-          handleInputBlur={handleInputBlur}
-          editedTitle={editedTitle}
-        />
-      ) : (
-        <TodoTitle title={editedTitle} onDoubleClick={handleDoubleClick} />
-      )}
+      <TodoEdit
+        handleEditedTitle={handleEditedTitle}
+        handleKeyDown={handleKeyDown}
+        handleInputBlur={handleInputBlur}
+        editedTitle={editedTitle}
+        isEditing={isEditing}
+      />
 
-      {!isEditing && <TodoDelete onDelete={() => handleTodoDelete(todo.id)} />}
+      <TodoTitle
+        title={editedTitle}
+        onDoubleClick={handleDoubleClick}
+        isEditing={isEditing}
+      />
+
+      <TodoDelete
+        onDelete={() => handleTodoDelete(todo.id)}
+        isEditing={isEditing}
+      />
 
       <TodoLoader loading={loading} />
     </div>
