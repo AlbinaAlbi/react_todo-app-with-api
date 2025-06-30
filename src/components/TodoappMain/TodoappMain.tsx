@@ -8,7 +8,6 @@ interface TodoappMainProps {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorNotification: (msg: string) => void;
   inputRef: React.RefObject<HTMLInputElement>;
-  errorNotification: string;
 }
 
 export const TodoappMain: React.FC<TodoappMainProps> = ({
@@ -67,7 +66,12 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
     }
   };
 
-  const handleUpdateTodo = async (updatedTodo: Todo) => {
+  const handleUpdateTodo = async (
+    updatedTodo: Todo,
+    setIsEditing: (val: boolean) => void,
+    setEditedTitle: (val: string) => void,
+    trimmedTitle: string,
+  ) => {
     setTodos(prev =>
       prev.map(todo =>
         todo.id === updatedTodo.id ? { ...todo, isLoaded: false } : todo,
@@ -86,8 +90,12 @@ export const TodoappMain: React.FC<TodoappMainProps> = ({
             : todo,
         ),
       );
+
+      setEditedTitle(trimmedTitle);
+      setIsEditing(false);
     } catch {
       errorNotificationMessage('Unable to update a todo', setErrorNotification);
+      setIsEditing(true);
 
       setTodos(prev =>
         prev.map(todo =>

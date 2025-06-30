@@ -10,7 +10,12 @@ interface TodoElementProps {
   todo: Todo;
   handleTodoDelete: (keyTodo: number) => void;
   handleToggleStatus: (idTodo: number) => void;
-  handleUpdateTodo: (updateTodo: Todo) => void;
+  handleUpdateTodo: (
+    updateTodo: Todo,
+    setIsEditing: (val: boolean) => void,
+    setEditedTitle: (val: string) => void,
+    trimmedTitle: string,
+  ) => void;
 }
 
 export const TodoElement: React.FC<TodoElementProps> = ({
@@ -35,6 +40,7 @@ export const TodoElement: React.FC<TodoElementProps> = ({
 
     if (!trimmedTitle) {
       setEditedTitle(todo.title.trim());
+      setIsEditing(false);
 
       return;
     }
@@ -48,9 +54,12 @@ export const TodoElement: React.FC<TodoElementProps> = ({
     const updateTodos = { ...todo, title: trimmedTitle };
 
     try {
-      await handleUpdateTodo(updateTodos);
-      setEditedTitle(trimmedTitle);
-      setIsEditing(false);
+      await handleUpdateTodo(
+        updateTodos,
+        setIsEditing,
+        setEditedTitle,
+        trimmedTitle,
+      );
     } catch {}
   };
 
