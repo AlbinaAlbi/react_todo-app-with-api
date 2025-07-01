@@ -8,14 +8,14 @@ import { TodoEdit } from '../TodoEdit';
 
 interface TodoElementProps {
   todo: Todo;
-  handleTodoDelete: (keyTodo: number) => void;
+  handleTodoDelete: (keyTodo: number) => Promise<boolean>;
   handleToggleStatus: (idTodo: number) => void;
   handleUpdateTodo: (
     updateTodo: Todo,
     setIsEditing: (val: boolean) => void,
     setEditedTitle: (val: string) => void,
     trimmedTitle: string,
-  ) => void;
+  ) => Promise<boolean>;
 }
 
 export const TodoElement: React.FC<TodoElementProps> = ({
@@ -39,8 +39,13 @@ export const TodoElement: React.FC<TodoElementProps> = ({
     const trimmedTitle = rawTitle.trim();
 
     if (!trimmedTitle) {
-      handleTodoDelete(todo.id);
-      setIsEditing(false);
+      const deleteSusses = await handleTodoDelete(todo.id);
+
+      if (deleteSusses) {
+        setIsEditing(false);
+      } else {
+        setIsEditing(true);
+      }
 
       return;
     }
@@ -53,14 +58,18 @@ export const TodoElement: React.FC<TodoElementProps> = ({
 
     const updateTodos = { ...todo, title: trimmedTitle };
 
-    try {
-      await handleUpdateTodo(
-        updateTodos,
-        setIsEditing,
-        setEditedTitle,
-        trimmedTitle,
-      );
-    } catch {}
+    const success = await handleUpdateTodo(
+      updateTodos,
+      setIsEditing,
+      setEditedTitle,
+      trimmedTitle,
+    );
+
+    if (success) {
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+    }
   };
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
