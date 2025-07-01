@@ -39,7 +39,7 @@ export const TodoElement: React.FC<TodoElementProps> = ({
     const trimmedTitle = rawTitle.trim();
 
     if (!trimmedTitle) {
-      setEditedTitle(todo.title.trim());
+      handleTodoDelete(todo.id);
       setIsEditing(false);
 
       return;
